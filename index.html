@@ -3,40 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaos Silence Generator</title>
-    <!-- Link to external styling -->
+    <title>Hours of Silence: Meme Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>🤫 Hours of Silence Engine</h1>
+    <h1>🤫 10 Hours of Silence Broken By...</h1>
 
-    <!-- Engine Configuration Controls -->
+    <!-- Core Engine Parameters -->
     <div class="card">
         <div class="control-group">
-            <label>Check Interval: <span id="interval-val">5</span> seconds</label>
+            <label>Check Every: <span id="interval-val">5</span> seconds</label>
             <input type="range" id="interval-input" min="1" max="30" value="5">
         </div>
         <div class="control-group">
-            <label>Trigger Probability: <span id="chance-val">30</span>%</label>
-            <input type="range" id="chance-input" min="1" max="100" value="30">
+            <label>Jumpscare Probability: <span id="chance-val">25</span>%</label>
+            <input type="range" id="chance-input" min="1" max="100" value="25">
         </div>
-        <button id="start-btn">⚡ Initialize Silence</button>
-        <div id="status-display" class="status">Engine Status: Idle</div>
+        <button id="start-btn">⚡ Start the Silence</button>
+        <div id="status-display" class="status">Engine Status: Standing By...</div>
     </div>
 
-    <!-- Sound Pool Management -->
+    <!-- The Preloaded Meme Inventory -->
     <div class="card">
-        <label>📥 Inject Custom Sounds (.mp3, .wav, .ogg)</label>
-        <input type="file" id="file-uploader" multiple accept="audio/*" style="margin-bottom: 15px;">
-        
-        <label>🔊 Active Sound Inventory</label>
+        <div class="inventory-header">
+            <label>🔊 Toggle Meme Roster</label>
+            <div>
+                <button id="select-all-btn" class="mini-btn">Check All</button>
+                <button id="clear-all-btn" class="mini-btn">Uncheck All</button>
+            </div>
+        </div>
         <div id="sound-pool-list">
-            <p style="color: #666; font-style: italic;">No sounds loaded. Upload files above.</p>
+            <!-- Populated automatically by the script.js array -->
         </div>
     </div>
 
-    <!-- Link to core application logic -->
     <script src="script.js"></script>
 </body>
 </html>
