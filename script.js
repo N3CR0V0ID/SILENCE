@@ -1,17 +1,15 @@
-// Hardcoded stock array linking to public audio asset repositories
+// Pre-seeded meme bank array using safe public file links
 let soundInventory = [
     { id: "pipe", name: "💥 Bass Boosted Metal Pipe Falling", url: "https://google.com", enabled: true },
     { id: "vine", name: "🗿 Vine Boom Impact", url: "https://soundjay.com", enabled: true }, 
     { id: "mario", name: "🍄 Retro Mario Jump Sound", url: "https://soundjay.com", enabled: true },
-    { id: "yoda", name: "👽 Classic Lego Yoda Death Scream", url: "https://google.com", enabled: true },
-    { id: "villager", name: "🌾 Minecraft Villager Huh?", url: "https://google.com", enabled: true },
-    { id: "fart", name: "💨 Reverb Fart Sound Effect", url: "https://google.com", enabled: true },
     { id: "error", name: "💻 Windows XP Critical Error Dialog", url: "https://soundjay.com", enabled: true }
 ];
 
 let executionTimer = null;
 let isEngineRunning = false;
 
+// DOM Object caching hooks
 const intervalInput = document.getElementById('interval-input');
 const intervalVal = document.getElementById('interval-val');
 const chanceInput = document.getElementById('chance-input');
@@ -22,12 +20,19 @@ const statusDisplay = document.getElementById('status-display');
 const selectAllBtn = document.getElementById('select-all-btn');
 const clearAllBtn = document.getElementById('clear-all-btn');
 
+// Live update labels when sliding configurations
 intervalInput.addEventListener('input', () => intervalVal.textContent = intervalInput.value);
 chanceInput.addEventListener('input', () => chanceVal.textContent = chanceInput.value);
 
-// Build UI checkboxes out of the hardcoded memory array
+// Re-compile layout checklist UI elements 
 function renderSoundPool() {
     soundPoolList.innerHTML = '';
+    
+    if (soundInventory.length === 0) {
+        soundPoolList.innerHTML = '<p style="color: #666; font-style: italic;">No sounds loaded into engine database.</p>';
+        return;
+    }
+
     soundInventory.forEach(sound => {
         const row = document.createElement('div');
         row.className = 'sound-item';
@@ -46,19 +51,19 @@ function renderSoundPool() {
     });
 }
 
-// Bulk toggle selectors
+// Group toggle event listeners
 selectAllBtn.addEventListener('click', () => { soundInventory.forEach(s => s.enabled = true); renderSoundPool(); });
 clearAllBtn.addEventListener('click', () => { soundInventory.forEach(s => s.enabled = false); renderSoundPool(); });
 
-// Engine runtime cycle loop
+// Clock tracking tick mechanism
 function runEngineCycle() {
     if (!isEngineRunning) return;
 
-    statusDisplay.textContent = "Engine Status: Infinite silence stretching out...";
+    statusDisplay.textContent = "Engine Status: Listening to silence...";
     const activePool = soundInventory.filter(s => s.enabled);
     
     if (activePool.length === 0) {
-        statusDisplay.textContent = "Warning: Safe mode active (Zero triggers enabled)";
+        statusDisplay.textContent = "Engine Warning: Silence uncompromised (No sounds enabled!)";
         scheduleNextCycle();
         return;
     }
@@ -72,9 +77,9 @@ function runEngineCycle() {
         
         statusDisplay.textContent = `🚨 INTERRUPTED BY: ${selectedSound.name}`;
         
-        // Spawn audio layer node
+        // Instant audio node constructor to handle rapid overlaps
         const audioNode = new Audio(selectedSound.url);
-        audioNode.play().catch(err => console.log("Audio lock:", err));
+        audioNode.play().catch(err => console.log("Browser block error context:", err));
     }
 
     scheduleNextCycle();
@@ -85,20 +90,21 @@ function scheduleNextCycle() {
     executionTimer = setTimeout(runEngineCycle, cycleTimeMilliseconds);
 }
 
-// Master killswitch toggling
+// Master execution toggle gate
 startBtn.addEventListener('click', () => {
     if (isEngineRunning) {
         isEngineRunning = false;
         clearTimeout(executionTimer);
-        startBtn.textContent = "⚡ Start the Silence";
-        startBtn.style.background = "#00ff66";
+        startBtn.textContent = "⚡ Initialize Silence";
+        startBtn.style.background = "#00ff00";
         statusDisplay.textContent = "Engine Status: Halted";
     } else {
         isEngineRunning = true;
-        startBtn.textContent = "🛑 Stop Engine";
-        startBtn.style.background = "#ff0055";
+        startBtn.textContent = "🛑 Terminate Engine";
+        startBtn.style.background = "#ff0000";
         runEngineCycle();
     }
 });
 
+// Build standard roster list on application boot
 renderSoundPool();
