@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X Hours of Silence Interrupted Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #ff4757;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #a4b0be;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+        .controls {
+            margin-bottom: 25px;
+            background: #2f3542;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        label {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        input[type="range"] {
+            width: 60%;
+        }
+        .sound-list {
+            text-align: left;
+            background: #2f3542;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .sound-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .sound-item:last-child {
+            margin-bottom: 0;
+        }
+        .sound-item input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        .btn {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+        }
+        .btn:hover {
+            background-color: #ff6b81;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn.active {
+            background-color: #2ed573;
+        }
+        .status {
+            margin-top: 15px;
+            font-style: italic;
+            color: #ffa502;
+            min-height: 20px;
+        }
+        .custom-upload {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            border-top: 1px solid #747d8c;
+            padding-top: 15px;
+        }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-btn {
+            background-color: #747d8c;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Hours of Silence Generator</h1>
+    <div class="subtitle">Build your own custom mind-numbing chaos tracker</div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label for="interval">Check Every:</label>
+            <span id="interval-val">5s</span>
+            <input type="range" id="interval" min="1" max="30" value="5">
+        </div>
+        <div class="control-group">
+            <label for="probability">Trigger Chance:</label>
+            <span id="prob-val">25%</span>
+            <input type="range" id="probability" min="1" max="100" value="25">
+        </div>
+    </div>
+
+    <h3>Toggle Active Sounds</h3>
+    <div class="sound-list" id="soundList">
+        <!-- Stock Sounds -->
+        <div class="sound-item">
+            <input type="checkbox" id="sound-pipe" checked data-url="https://actions.google.com/sounds/v1/cartoon/metal_twang.ogg">
+            <label for="sound-pipe">Metal Twang / Pipe Accent</label>
+        </div>
+        <div class="sound-item">
+            <input type="checkbox" id="sound-horn" checked data-url="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">
+            <label for="sound-horn">Digital Bleep Alarm</label>
+        </div>
+        <div class="sound-item">
+            <input type="checkbox" id="sound-boom" checked data-url="https://actions.google.com/sounds/v1/science_fiction/alien_creature_gasp.ogg">
+            <label for="sound-boom">Surreal Creature Gasp</label>
+        </div>
+        <div class="sound-item">
+            <input type="checkbox" id="sound-error" checked data-url="https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg">
+            <label for="sound-error">Cartoon Cowbell</label>
+        </div>
+    </div>
+
+    <div class="custom-upload">
+        <label>Add Custom Sound Effect:</label><br>
+        <div class="file-input-wrapper">
+            <span class="file-btn">Choose Audio File</span>
+            <input type="file" id="audioUpload" accept="audio/*">
+        </div>
+    </div>
+
+    <button class="btn" id="startBtn" style="margin-top: 25px;">START SILENCE</button>
+    <div class="status" id="statusMessage">Stopped</div>
+</div>
+
+<script>
+    let isRunning = false;
+    let timerInterval = null;
+    let customSoundCount = 0;
+
+    const intervalSlider = document.getElementById('interval');
+    const intervalVal = document.getElementById('interval-val');
+    const probSlider = document.getElementById('probability');
+    const probVal = document.getElementById('prob-val');
+    const startBtn = document.getElementById('startBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const soundList = document.getElementById('soundList');
+    const audioUpload = document.getElementById('audioUpload');
+
+    // Dynamic slider text updates
+    intervalSlider.addEventListener('input', () => { intervalVal.textContent = intervalSlider.value + 's'; });
+    probSlider.addEventListener('input', () => { probVal.textContent = probSlider.value + '%'; });
+
+    // Handle Custom File Uploads
+    audioUpload.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        customSoundCount++;
+        const objectURL = URL.createObjectURL(file);
+        
+        const soundItem = document.createElement('div');
+        soundItem.className = 'sound-item';
+        soundItem.innerHTML = `
+            <input type="checkbox" id="custom-${customSoundCount}" checked data-url="${objectURL}">
+            <label for="custom-${customSoundCount}">Custom: ${file.name.substring(0, 20)}...</label>
+        `;
+        soundList.appendChild(soundItem);
+        statusMessage.textContent = `Added custom sound: ${file.name}`;
+    });
+
+    // Main Engine Logic
+    startBtn.addEventListener('click', () => {
+        if (isRunning) {
+            // Stop Engine
+            clearInterval(timerInterval);
+            startBtn.textContent = 'START SILENCE';
+            startBtn.classList.remove('active');
+            statusMessage.textContent = 'Stopped';
+            isRunning = false;
+        } else {
+            // Start Engine
+            startBtn.textContent = 'STOP ENGINE';
+            startBtn.classList.add('active');
+            statusMessage.textContent = 'The silence has begun... stay alert.';
+            isRunning = true;
+            
+            runEngine();
+        }
+    });
+
+    function runEngine() {
+        const checkCycleTime = parseInt(intervalSlider.value) * 1000;
+        
+        timerInterval = setInterval(() => {
+            const chance = parseInt(probSlider.value);
+            const roll = Math.floor(Math.random() * 100) + 1;
+            
+            if (roll <= chance) {
+                playRandomActiveSound();
+            } else {
+                statusMessage.textContent = "Silence maintained... (Rolled " + roll + " vs " + chance + "%)";
+            }
+        }, checkCycleTime);
+    }
+
+    function playRandomActiveSound() {
+        // Find checkboxes that are currently active
+        const activeCheckboxes = Array.from(soundList.querySelectorAll('input[type="checkbox"]:checked'));
+        
+        if (activeCheckboxes.length === 0) {
+            statusMessage.textContent = "A sound tried to play, but nothing is enabled!";
+            return;
+        }
+
+        // Pick one at random
+        const targetCheckbox = activeCheckboxes[Math.floor(Math.random() * activeCheckboxes.length)];
+        const audioUrl = targetCheckbox.getAttribute('data-url');
+        const soundLabel = targetCheckbox.nextElementSibling.textContent;
+
+        statusMessage.textContent = `💥 Interrupted by: ${soundLabel}!`;
+
+        // Native HTML5 Web Audio play
+        const audio = new Audio(audioUrl);
+        audio.play().catch(err => {
+            console.error("Audio playback blocked or failed:", err);
+            statusMessage.textContent = "Error playing sound! Interact with page first.";
+        });
+    }
+</script>
+
+</body>
+</html>
