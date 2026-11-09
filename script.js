@@ -1,15 +1,29 @@
-// Pre-seeded meme bank array using safe public file links
+// Pre-seeded synth sound data strings to bypass all browser CORS blocks entirely
 let soundInventory = [
-    { id: "pipe", name: "💥 Bass Boosted Metal Pipe Falling", url: "https://google.com", enabled: true },
-    { id: "vine", name: "🗿 Vine Boom Impact", url: "https://soundjay.com", enabled: true }, 
-    { id: "mario", name: "🍄 Retro Mario Jump Sound", url: "https://soundjay.com", enabled: true },
-    { id: "error", name: "💻 Windows XP Critical Error Dialog", url: "https://soundjay.com", enabled: true }
+    { 
+        id: "laser", 
+        name: "👾 Retro Sci-Fi Laser Sound", 
+        url: "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YV92T18AZmZmZmVmZWNkY2JhWVlZWllZWXFxeXl5gYFhYWFhYWGBgYGBgYFhYWFhYWGBgYFhYWFhYWGBgYGBgXFxeXl5gYFhYWFhYWGBgWQA", 
+        enabled: true 
+    },
+    { 
+        id: "blip", 
+        name: "🍄 Retro Arcade Jump Blip", 
+        url: "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YV92T18Aenp6enp6ampqampqampqampqampqaWlpaWlpaWlpampqampqampqampqaWlpaWlpaWlpaWlpampqampqampqamQA", 
+        enabled: true 
+    },
+    { 
+        id: "alert", 
+        name: "💻 Windows Error Tone Synth", 
+        url: "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YV92T18Ad3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3QA", 
+        enabled: true 
+    }
 ];
 
 let executionTimer = null;
 let isEngineRunning = false;
 
-// DOM Object caching hooks
+// UI Component DOM Targets
 const intervalInput = document.getElementById('interval-input');
 const intervalVal = document.getElementById('interval-val');
 const chanceInput = document.getElementById('chance-input');
@@ -20,16 +34,16 @@ const statusDisplay = document.getElementById('status-display');
 const selectAllBtn = document.getElementById('select-all-btn');
 const clearAllBtn = document.getElementById('clear-all-btn');
 
-// Live update labels when sliding configurations
+// Live update configurations labels on slide drag
 intervalInput.addEventListener('input', () => intervalVal.textContent = intervalInput.value);
 chanceInput.addEventListener('input', () => chanceVal.textContent = chanceInput.value);
 
-// Re-compile layout checklist UI elements 
+// Build checkable inventory roster interface lines
 function renderSoundPool() {
     soundPoolList.innerHTML = '';
     
     if (soundInventory.length === 0) {
-        soundPoolList.innerHTML = '<p style="color: #666; font-style: italic;">No sounds loaded into engine database.</p>';
+        soundPoolList.innerHTML = '<p style="color: #777; font-style: italic; text-align: center; margin-top: 20px;">No sounds loaded.</p>';
         return;
     }
 
@@ -51,19 +65,19 @@ function renderSoundPool() {
     });
 }
 
-// Group toggle event listeners
+// Bulk checklist actions
 selectAllBtn.addEventListener('click', () => { soundInventory.forEach(s => s.enabled = true); renderSoundPool(); });
 clearAllBtn.addEventListener('click', () => { soundInventory.forEach(s => s.enabled = false); renderSoundPool(); });
 
-// Clock tracking tick mechanism
+// Main execution cycle iteration
 function runEngineCycle() {
     if (!isEngineRunning) return;
 
-    statusDisplay.textContent = "Engine Status: Listening to silence...";
+    statusDisplay.textContent = "Engine Status: Emitting pure silence...";
     const activePool = soundInventory.filter(s => s.enabled);
     
     if (activePool.length === 0) {
-        statusDisplay.textContent = "Engine Warning: Silence uncompromised (No sounds enabled!)";
+        statusDisplay.textContent = "Engine Status: Safe mode active (Zero sound targets selected)";
         scheduleNextCycle();
         return;
     }
@@ -75,11 +89,11 @@ function runEngineCycle() {
         const randomIndex = Math.floor(Math.random() * activePool.length);
         const selectedSound = activePool[randomIndex];
         
-        statusDisplay.textContent = `🚨 INTERRUPTED BY: ${selectedSound.name}`;
+        statusDisplay.textContent = `💥 Interrupted by: ${selectedSound.name}`;
         
-        // Instant audio node constructor to handle rapid overlaps
+        // Native standalone sound audio constructor pipeline
         const audioNode = new Audio(selectedSound.url);
-        audioNode.play().catch(err => console.log("Browser block error context:", err));
+        audioNode.play().catch(err => console.log("Audio play block prevented:", err));
     }
 
     scheduleNextCycle();
@@ -90,21 +104,21 @@ function scheduleNextCycle() {
     executionTimer = setTimeout(runEngineCycle, cycleTimeMilliseconds);
 }
 
-// Master execution toggle gate
+// Global master state toggle link click logic
 startBtn.addEventListener('click', () => {
     if (isEngineRunning) {
         isEngineRunning = false;
         clearTimeout(executionTimer);
-        startBtn.textContent = "⚡ Initialize Silence";
-        startBtn.style.background = "#00ff00";
+        startBtn.textContent = "Start Silence";
+        startBtn.classList.remove('running');
         statusDisplay.textContent = "Engine Status: Halted";
     } else {
         isEngineRunning = true;
-        startBtn.textContent = "🛑 Terminate Engine";
-        startBtn.style.background = "#ff0000";
+        startBtn.textContent = "Stop Silence";
+        startBtn.classList.add('running');
         runEngineCycle();
     }
 });
 
-// Build standard roster list on application boot
+// Render the stable local pool targets right away on load execution 
 renderSoundPool();
